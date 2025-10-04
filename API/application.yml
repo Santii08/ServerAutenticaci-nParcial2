@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8443}
+  ssl:
+    enabled: ${SERVER_SSL_ENABLED:true}
+    key-store: ${SERVER_SSL_KEY_STORE:classpath:keystore.p12}
+    key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD:yourpassword}
+    key-store-type: ${SERVER_SSL_KEY_STORE_TYPE:PKCS12}
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}

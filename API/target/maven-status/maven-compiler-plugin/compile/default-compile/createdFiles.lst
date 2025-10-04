@@ -1,0 +1,6 @@
+com\patrones\api\ApiApplication.class
+com\example\api\config\SecurityConfig.class
+com\example\api\controller\UserController.class
+com\example\api\controller\TestController.class
+com\example\api\controller\ServiceController.class
+com\example\api\config\CorsConfig.class

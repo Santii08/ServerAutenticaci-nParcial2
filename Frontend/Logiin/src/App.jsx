@@ -16,6 +16,7 @@ function App() {
       if (authenticated) {
         setIsLoggedIn(true);
         setToken(keycloak.token);
+        console.log("🔑 Token:", keycloak.token);
 
         // refrescar token automáticamente
         setInterval(() => {
@@ -52,7 +53,7 @@ function App() {
   // Llamar a la API protegida con el token
   const callApi = () => {
     if (token) {
-      fetch("http://localhost:8080/user/profile", {
+      fetch("https://localhost:8443/user/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {

@@ -1,14 +1,18 @@
-# Imagen base con JDK 17
-FROM eclipse-temurin:17-jdk-jammy
+# Imagen base con JDK 21 (compatible con tu compilación actual)
+FROM eclipse-temurin:21-jdk-jammy
+
 
 # Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
 # Copiar el JAR generado
 COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY keystore.p12 keystore.p12
 
 # Puerto que expone tu API
-EXPOSE 8081
+EXPOSE 8443
+
+
 
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
