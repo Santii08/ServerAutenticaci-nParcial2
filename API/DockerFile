@@ -1,14 +1,23 @@
-# Imagen base con JDK 17
-FROM eclipse-temurin:17-jdk-jammy
+# Usa una imagen de Java
+FROM openjdk:21-jdk-slim
 
-# Directorio de trabajo dentro del contenedor
+# Crea un directorio de trabajo
 WORKDIR /app
 
-# Copiar el JAR generado
-COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
+# Copia el pom.xml y descarga dependencias
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
+RUN ./mvnw dependency:go-offline
 
-# Puerto que expone tu API
-EXPOSE 8081
+# Copia el resto del código
+COPY . .
 
-# Comando para ejecutar la aplicación
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Compila y empaqueta el proyecto
+RUN ./mvnw clean package -DskipTests
+
+# Expone el puerto 8080
+EXPOSE 8080
+
+# Ejecuta la aplicación
+ENTRYPOINT ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
