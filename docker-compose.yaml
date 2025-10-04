@@ -9,13 +9,17 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
+    volumes:
+      - ./keycloak_data:/opt/keycloak/data        # Persistencia local
+      - ./import:/opt/keycloak/data/import       # Importación automática
 
   api:
     build:
       context: ./API
       dockerfile: Dockerfile
     environment:
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/mi-realm
+      # Apunta al Keycloak dentro de la red de Docker (nombre del servicio, no localhost)
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/parcial-realm
     ports:
       - "8081:8080"
     depends_on:
