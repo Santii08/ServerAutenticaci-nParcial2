@@ -1,0 +1,40 @@
+{
+  "realm" : "parcial-realm",
+  "users" : [ {
+    "id" : "9d084c5a-6ff3-4238-bf08-4f1b8c1d379e",
+    "createdTimestamp" : 1759535173363,
+    "username" : "alice",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "alice",
+    "lastName" : "alice",
+    "credentials" : [ {
+      "id" : "3b87abca-b7dd-423a-874b-f1907ef2a0c1",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1759537434752,
+      "secretData" : "{\"value\":\"ppaooBRHJ2TmTOiow1U13YKfxRnxWPlDXwmD5/n21yo=\",\"salt\":\"cVO28zIvFJdxCbqTMcgIag==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-parcial-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "dc74c0a6-6c11-4b5e-9087-07fb28f905af",
+    "createdTimestamp" : 1759532962354,
+    "username" : "service-account-service-client",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "serviceAccountClientId" : "service-client",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-parcial-realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
