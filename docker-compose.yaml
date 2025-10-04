@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
@@ -11,7 +12,7 @@ services:
 
   api:
     build:
-      context: ./Api
+      context: ./API
       dockerfile: Dockerfile
     environment:
       KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/mi-realm
