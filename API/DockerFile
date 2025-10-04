@@ -1,23 +1,10 @@
-# Usa una imagen de Java
 FROM openjdk:21-jdk-slim
-
-# Crea un directorio de trabajo
 WORKDIR /app
-
-# Copia el pom.xml y descarga dependencias
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
 RUN ./mvnw dependency:go-offline
-
-# Copia el resto del código
 COPY . .
-
-# Compila y empaqueta el proyecto
 RUN ./mvnw clean package -DskipTests
-
-# Expone el puerto 8081
-EXPOSE 8081
-
-# Ejecuta la aplicación
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
