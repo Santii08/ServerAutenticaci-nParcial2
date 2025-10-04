@@ -2,9 +2,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-  url: "http://localhost:8081/auth",
-  realm: "parcial-realm",
-  clientId: "web-client",
+  url: "http://localhost:8080", // URL base del Keycloak
+  realm: "parcial-realm", // tu realm
+  clientId: "web-client", // el client que creaste en Keycloak
 });
 
 let initialized = false;

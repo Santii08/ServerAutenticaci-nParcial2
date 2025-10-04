@@ -4,17 +4,13 @@ import keycloak, { initKeycloak } from "./keycloak";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState({ username: "", password: "" });
   const [apiData, setApiData] = useState(null);
 
   const [counter, setCounter] = useState(0);
   const [customStart, setCustomStart] = useState("");
   const [isRunning, setIsRunning] = useState(false);
 
-  // Usuario de prueba
-  const USERNAME = "admin";
-  const PASSWORD = "1234";
-
+  // Inicializar Keycloak al montar
   useEffect(() => {
     initKeycloak().then((authenticated) => {
       if (authenticated) {
@@ -24,26 +20,16 @@ function App() {
         // refrescar token automáticamente
         setInterval(() => {
           keycloak.updateToken(60).then((refreshed) => {
-            if (refreshed) setToken(keycloak.token);
+            if (refreshed) {
+              setToken(keycloak.token);
+            }
           });
         }, 5000);
+      } else {
+        setIsLoggedIn(false);
       }
     });
   }, []);
-
-  // Login local para pruebas
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (user.username === USERNAME && user.password === PASSWORD) {
-      setIsLoggedIn(true);
-    } else {
-      alert("Usuario o contraseña incorrectos");
-    }
-  };
-
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
 
   const setCustomCounter = () => {
     if (!isNaN(customStart) && customStart > 0) {
@@ -63,10 +49,9 @@ function App() {
     return () => clearInterval(timer);
   }, [isRunning, counter]);
 
-  // Función para llamar a la API
+  // Llamar a la API protegida con el token
   const callApi = () => {
     if (token) {
-      // Llamada real con Keycloak
       fetch("http://localhost:8080/user/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -76,56 +61,25 @@ function App() {
         })
         .then((data) => setApiData(data))
         .catch((err) => console.error(err));
-    } else {
-      // Simulación de datos para login local
-      setApiData({
-        message: "ERROR DE AUTENTICACION",
-        username: user.username,
-      });
     }
   };
 
-  // Vista login local
+  // Si no está logueado → mostrar botón de login de Keycloak
   if (!isLoggedIn) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            name="username"
-            placeholder="Usuario"
-            value={user.username}
-            onChange={handleChange}
-          />
-          <br />
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={user.password}
-            onChange={handleChange}
-          />
-          <br />
-          <button type="submit">Entrar</button>
-        </form>
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>Inicia sesión con Keycloak</h2>
+        <button onClick={() => keycloak.login()}>Login</button>
       </div>
     );
   }
 
-  // Vista principal con contador y botón de API
+  // Vista principal si está logueado
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>
         Bienvenido{" "}
-        {token ? keycloak.tokenParsed.preferred_username : user.username} 👋
+        {token ? keycloak.tokenParsed?.preferred_username : "Usuario"} 👋
       </h2>
       <h3>Tiempo restante: {counter} s</h3>
 
@@ -163,6 +117,10 @@ function App() {
             <pre>{JSON.stringify(apiData, null, 2)}</pre>
           </div>
         )}
+      </div>
+
+      <div style={{ marginTop: "30px" }}>
+        <button onClick={() => keycloak.logout()}>Cerrar sesión</button>
       </div>
     </div>
   );
