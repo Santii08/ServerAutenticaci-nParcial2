@@ -18,7 +18,8 @@ public class SecurityConfig {
                         .requestMatchers("/service/**").hasAuthority("SCOPE_service.read")
                         .requestMatchers("/user/**").hasAuthority("SCOPE_user.read")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt());
+                .oauth2ResourceServer(
+                        oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         return http.build();
     }
@@ -26,8 +27,8 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthorityPrefix("SCOPE_"); // prefijo para scopes
-        converter.setAuthoritiesClaimName("scope"); // claim en el token
+        converter.setAuthorityPrefix("SCOPE_");
+        converter.setAuthoritiesClaimName("scope");
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
         return jwtConverter;

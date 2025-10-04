@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # 🧱 Servicio de autenticación (Keycloak)
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
     command: start-dev --import-realm
@@ -10,28 +11,33 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak_data:/opt/keycloak/data        # Persistencia local
-      - ./import:/opt/keycloak/data/import       # Importación automática
+      - ./keycloak_data:/opt/keycloak/data         # Persistencia local
+      - ./import:/opt/keycloak/data/import         # Importación automática del realm
 
+  # ⚙️ Servicio del backend (API con Spring Boot)
   api:
     build:
       context: ./API
       dockerfile: Dockerfile
     environment:
-      # Apunta al Keycloak dentro de la red de Docker (nombre del servicio, no localhost)
+      # Apunta al Keycloak dentro de la red Docker
       KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/parcial-realm
+      SPRING_APPLICATION_NAME: demo
+      SERVER_PORT: 8081
     ports:
       - "8081:8081"
     depends_on:
       - keycloak
 
+  # 💻 Servicio del frontend (Vite + Nginx)
   frontend:
     build:
       context: ./Frontend/Logiin
       dockerfile: Dockerfile
+    environment:
+      # Aquí apuntas al contenedor del backend (no localhost)
+      - VITE_API_URL=http://api:8081
     ports:
       - "3000:80"
     depends_on:
       - api
-    environment:
-      - VITE_API_URL=http://api:8081
