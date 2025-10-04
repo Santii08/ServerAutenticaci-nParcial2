@@ -16,8 +16,8 @@ COPY . .
 # Compila y empaqueta el proyecto
 RUN ./mvnw clean package -DskipTests
 
-# Expone el puerto 8080
-EXPOSE 8080
+# Expone el puerto 8081
+EXPOSE 8081
 
 # Ejecuta la aplicación
 ENTRYPOINT ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]

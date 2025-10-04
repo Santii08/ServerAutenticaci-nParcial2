@@ -8,7 +8,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "8081:8081"
+      - "8080:8080"
     volumes:
       - ./keycloak_data:/opt/keycloak/data        # Persistencia local
       - ./import:/opt/keycloak/data/import       # Importación automática
