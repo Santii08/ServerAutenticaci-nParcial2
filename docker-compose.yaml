@@ -15,17 +15,13 @@ services:
 
   api:
     build:
-      context: ./API
+      context: ./node-api
       dockerfile: Dockerfile
     environment:
-      SERVER_PORT: 8443
-      SERVER_SSL_ENABLED: "true"
-      SERVER_SSL_KEY_STORE: /app/keystore.p12
-      SERVER_SSL_KEY_STORE_PASSWORD: yourpassword
-      SERVER_SSL_KEY_STORE_TYPE: PKCS12
-      KEYCLOAK_ISSUER_URI: https://keycloak:8443/realms/parcial-realm
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/parcial-realm
+      PORT: 8443
     volumes:
-      - ./API/keystore.p12:/app/keystore.p12
+      - ./node-api/certs:/app/certs
     ports:
       - "8443:8443"
     depends_on:
@@ -38,6 +34,8 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_API_URL=https://localhost:8443
+      - VITE_API_URL=https://api:8443
+    volumes:
+      - ./certs:/app/certs
     depends_on:
       - api

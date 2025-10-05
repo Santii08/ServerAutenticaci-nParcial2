@@ -1,35 +1,56 @@
-package com.example.api.config;
+import express from "express";
+import https from "https";
+import fs from "fs";
+import jwt from "express-jwt";
+import jwksRsa from "jwks-rsa";
+import cors from "cors";
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+// --- Configuración HTTPS ---
+const app = express();
+const PORT = 8443;
 
-@Configuration
-@EnableMethodSecurity
-public class SecurityConfig {
+const httpsOptions = {
+  key: fs.readFileSync("./certs/localhost-key.pem"),
+  cert: fs.readFileSync("./certs/localhost.pem"),
+};
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // ✅ Habilitar CORS (usa la configuración de CorsConfig.java)
-            .cors()
-            .and()
-            // ❌ Desactivar CSRF en API REST
-            .csrf().disable()
-            // Solo HTTPS (redirige HTTP a HTTPS en producción)
-            .requiresChannel(channel -> channel.anyRequest().requiresSecure())
-            .authorizeHttpRequests(auth -> auth
-                // Endpoints públicos o protegidos
-                .requestMatchers("/public/**").permitAll() // 👈 acceso libre
-                .requestMatchers("/service/**").hasAuthority("SCOPE_service.read")
-                .requestMatchers("/user/**").hasAuthority("SCOPE_user.read")
-                .anyRequest().authenticated()
-            )
-            // ✅ Configuración de validación de tokens JWT con Keycloak
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt());
+// --- Configuración CORS ---
+app.use(cors({
+  origin: ["https://localhost:3000"], // frontend
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Authorization", "Content-Type"],
+  credentials: true
+}));
 
-        return http.build();
-    }
-}
+// --- Middleware JWT para validar tokens de Keycloak ---
+const jwtCheck = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksUri: "http://localhost:8080/realms/parcial-realm/protocol/openid-connect/certs"
+  }),
+  audience: "account", // depende de tu cliente Keycloak
+  issuer: "http://localhost:8080/realms/parcial-realm",
+  algorithms: ["RS256"]
+});
+
+// --- Endpoints ---
+// Public endpoint
+app.get("/public/info", (req, res) => {
+  res.json({ message: "Endpoint público, acceso libre" });
+});
+
+// Endpoint protegido por JWT (simula /user/**)
+app.get("/user/profile", jwtCheck, (req, res) => {
+  res.json({ user: "John Doe", email: "john@example.com" });
+});
+
+// Endpoint protegido por JWT (simula /service/**)
+app.get("/service/data", jwtCheck, (req, res) => {
+  res.json({ data: "Datos sensibles de servicios" });
+});
+
+// --- Iniciar servidor HTTPS ---
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`API HTTPS corriendo en https://localhost:${PORT}`);
+});
