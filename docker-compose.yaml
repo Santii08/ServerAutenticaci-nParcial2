@@ -3,15 +3,19 @@ version: "3.8"
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
-    command: start-dev --import-realm
+    command: start-dev --import-realm \
+      --https-key-store-file=/opt/keycloak/certs/keycloak.jks \
+      --https-key-store-password=password   # 🔹 añadido
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
+      - "9443:8443"
     volumes:
       - ./keycloak_data:/opt/keycloak/data
       - ./import:/opt/keycloak/data/import
+      - ./certs:/opt/keycloak/certs   # 🔹 añadimos tu keystore
 
   api:
     build:
