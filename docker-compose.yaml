@@ -14,20 +14,26 @@ services:
       - ./keycloak_data:/opt/keycloak/data         # Persistencia local
       - ./import:/opt/keycloak/data/import         # Importación automática del realm
 
-  # ⚙️ Servicio del backend (API con Spring Boot)
+  # ⚙️ Servicio del backend (API con Spring Boot y HTTPS)
   api:
     build:
       context: ./API
       dockerfile: Dockerfile
     environment:
-      # Apunta al Keycloak dentro de la red Docker
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/parcial-realm
       SPRING_APPLICATION_NAME: demo
-      SERVER_PORT: 8081
+      SERVER_PORT: 8443
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_KEY_STORE: /app/keystore.p12
+      SERVER_SSL_KEY_STORE_PASSWORD: 123456
+      SERVER_SSL_KEY_STORE_TYPE: PKCS12
+      SERVER_SSL_KEY_ALIAS: api-cert
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/parcial-realm
     ports:
-      - "8081:8081"
+      - "8443:8443"
     depends_on:
       - keycloak
+    volumes:
+      - ./API/src/main/resources/keystore.p12:/app/keystore.p12
 
   # 💻 Servicio del frontend (Vite + Nginx)
   frontend:
@@ -35,8 +41,8 @@ services:
       context: ./Frontend/Logiin
       dockerfile: Dockerfile
     environment:
-      # Aquí apuntas al contenedor del backend (no localhost)
-      - VITE_API_URL=http://api:8081
+      # ⚠️ Usa HTTPS y el nombre del contenedor "api"
+      - VITE_API_URL=https://api:8443
     ports:
       - "3000:80"
     depends_on:

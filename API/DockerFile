@@ -1,10 +1,36 @@
+# Usa una imagen ligera de Java 21
 FROM openjdk:21-jdk-slim
+
+# Establece el directorio de trabajo
 WORKDIR /app
+
+# Copia archivos de configuración de Maven
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
+
+# Descarga dependencias para optimizar la cache de build
 RUN ./mvnw dependency:go-offline
+
+# Copia el resto del código fuente
 COPY . .
+
+# Copia el keystore al contenedor (asegúrate de que está en src/main/resources/)
+COPY src/main/resources/keystore.p12 /app/keystore.p12
+
+# Compila el proyecto sin ejecutar tests
 RUN ./mvnw clean package -DskipTests
-EXPOSE 8080
+
+# Expone el puerto HTTPS
+EXPOSE 8443
+
+# Variables de entorno para SSL
+ENV SERVER_SSL_ENABLED=true
+ENV SERVER_PORT=8443
+ENV SERVER_SSL_KEY_STORE=/app/keystore.p12
+ENV SERVER_SSL_KEY_STORE_PASSWORD=123456
+ENV SERVER_SSL_KEY_STORE_TYPE=PKCS12
+ENV SERVER_SSL_KEY_ALIAS=api-cert
+
+# Comando de ejecución
 ENTRYPOINT ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
