@@ -7,7 +7,8 @@
 
 ## Video funcionamiento 
 
-https://youtu.be/qNyS2prJR-Q
+[![Ver en YouTube](https://img.youtube.com/vi/qNyS2prJR-Q/hqdefault.jpg)](https://youtu.be/qNyS2prJR-Q)
+
 
 ## **Índice**
 - 1. Introducción
