@@ -44,37 +44,39 @@ function App() {
     setIsLoggedIn(true);
   }
 
-  // 🔁 Refrescar el token manualmente
   async function refreshAccessToken() {
     if (!refreshToken) return alert("No hay refresh token disponible.");
 
     const params = new URLSearchParams();
     params.append("grant_type", "refresh_token");
-    params.append("client_id", "web-client");
+    params.append("client_id", "web-client"); // ✅ CORREGIDO
     params.append("refresh_token", refreshToken);
 
     const response = await fetch(
       "http://localhost:8080/realms/parcial-realm/protocol/openid-connect/token",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params,
       }
     );
 
     if (!response.ok) {
+      const err = await response.text();
+      console.error("Error refresh token:", err);
       alert("Error al refrescar el token. Inicia sesión nuevamente.");
       setIsLoggedIn(false);
+      setToken(null);
+      setRefreshToken(null);
+      setExpiresIn(0);
       return;
     }
 
     const data = await response.json();
-    console.log("✅ Nuevo Access Token:", data.access_token);
     setToken(data.access_token);
     setRefreshToken(data.refresh_token);
     setExpiresIn(data.expires_in);
+    console.log("✅ Nuevo Access Token:", data.access_token);
   }
 
   // ⏳ Contador del tiempo de vida del token
