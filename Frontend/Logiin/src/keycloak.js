@@ -1,20 +1,27 @@
-// src/keycloak.js
+// keycloak.js
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-  url: "http://localhost:8080", // URL base del Keycloak
-  realm: "parcial-realm", // tu realm
-  clientId: "web-client", // el client que creaste en Keycloak
+  url: "https://localhost:9443/",
+  realm: "parcial-realm",
+  clientId: "web-client",
 });
 
-let initialized = false;
-
 export const initKeycloak = () => {
-  if (!initialized) {
-    initialized = true;
-    return keycloak.init({ onLoad: "login-required", pkceMethod: "S256" });
-  }
-  return Promise.resolve(false); // ya inicializado
+  return keycloak
+    .init({
+      onLoad: "login-required",
+      checkLoginIframe: false,
+      redirectUri: "http://localhost:3000/",
+    })
+    .then((authenticated) => {
+      console.log("🔐 Keycloak authenticated:", authenticated);
+      return authenticated;
+    })
+    .catch((error) => {
+      console.error("❌ Error al iniciar Keycloak:", error);
+      return false;
+    });
 };
 
 export default keycloak;

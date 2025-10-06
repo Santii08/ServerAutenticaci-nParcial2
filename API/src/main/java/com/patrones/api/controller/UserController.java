@@ -8,6 +8,6 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public String getUserProfile() {
-        return "Perfil protegido de usuario final (Refresh Token)";
+        return "Perfil protegido de usuario final";
     }
 }

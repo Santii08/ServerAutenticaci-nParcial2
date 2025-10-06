@@ -11,8 +11,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak_data:/opt/keycloak/data         # Persistencia local
-      - ./import:/opt/keycloak/data/import         # Importación automática del realm
+      - ./keycloak_data:/opt/keycloak/data # Persistencia local
+      - ./import:/opt/keycloak/data/import # Importación automática del realm
+    networks:
+      - app-network # 🔹 Conectado a la red
 
   # ⚙️ Servicio del backend (API con Spring Boot y HTTPS)
   api:
@@ -34,6 +36,8 @@ services:
       - keycloak
     volumes:
       - ./API/src/main/resources/keystore.p12:/app/keystore.p12
+    networks:
+      - app-network # 🔹 Conectado a la red
 
   # 💻 Servicio del frontend (Vite + Nginx)
   frontend:
@@ -41,9 +45,38 @@ services:
       context: ./Frontend/Logiin
       dockerfile: Dockerfile
     environment:
-      # ⚠️ Usa HTTPS y el nombre del contenedor "api"
-      - VITE_API_URL=https://api:8443
+      - VITE_API_URL=https://api:8443 # 🔹 Usa nombre del servicio API
     ports:
       - "3000:80"
     depends_on:
       - api
+    networks:
+      - app-network # 🔹 Conectado a la red
+
+  # ⚙️ Servicio del cliente (microservicio)
+  service-client:
+    build:
+      context: ./Microservicio
+      dockerfile: Dockerfile
+    container_name: service-client
+    depends_on:
+      - keycloak
+      - api
+    environment:
+      SERVER_PORT: 8082
+      KEYCLOAK_TOKEN_URI: http://keycloak:8080/realms/parcial-realm/protocol/openid-connect/token
+      KEYCLOAK_CLIENT_ID: service-client
+      KEYCLOAK_CLIENT_SECRET: EK3YHkuGg7c9djjBYopwyddobcAbDgHn
+      KEYCLOAK_SCOPE: service.read
+      API_PROTECTED_URL: https://api:8443/service/data
+    ports:
+      - "8082:8082"
+    networks:
+      - app-network
+    stdin_open: true # 🔹 Permite interacción desde teclado (modo interactivo)
+    tty: true # 🔹 Mantiene la consola abierta (simula terminal real)
+
+# 🌐 Red compartida
+networks:
+  app-network:
+    driver: bridge
