@@ -1,3 +1,10 @@
+# **Parcial segundo corte patrones arquitectonicos avanzados**
+
+**Integrantes:**  
+- Juan Andrés Gómez
+- Daniel Santiago Ramirez Chinchilla
+- Santiago Navarro Cuy
+
 ## **Índice**
 - 1. Introducción
 - 2. Arquitectura General
