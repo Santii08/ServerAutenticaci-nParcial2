@@ -7,7 +7,10 @@
 
 ## Video funcionamiento 
 
+
 [![Ver en YouTube](https://img.youtube.com/vi/qNyS2prJR-Q/hqdefault.jpg)](https://youtu.be/qNyS2prJR-Q)
+
+https://youtu.be/qNyS2prJR-Q
 
 
 ## **Índice**
