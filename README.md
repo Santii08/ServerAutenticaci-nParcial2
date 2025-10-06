@@ -105,7 +105,6 @@ docker compose stop service-client
 | API (HTTPS) | [https://localhost:8443](https://localhost:8443) |
 | Frontend  | [http://localhost:3000](http://localhost:3000) |
 
----
 
 ## **2. Arquitectura General**
 El sistema está compuesto por: Keycloak (Authorization Server), una API protegida que valida tokens emitidos por Keycloak, un Microservicio cliente que usa Client Credentials, y un Frontend/App donde el usuario final hace login.
