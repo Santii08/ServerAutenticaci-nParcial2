@@ -5,6 +5,10 @@
 - Daniel Santiago Ramirez Chinchilla
 - Santiago Navarro Cuy
 
+## Video funcionamiento 
+
+https://youtu.be/qNyS2prJR-Q
+
 ## **Índice**
 - 1. Introducción
 - 2. Arquitectura General
